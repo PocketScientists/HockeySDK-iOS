@@ -30,18 +30,44 @@
 
 #if HOCKEYSDK_FEATURE_FEEDBACK
 
+extern NSString *const kBITFeedbackUpdateAttachmentThumbnail;
+
 #import "BITFeedbackMessage.h"
 
-@interface BITFeedbackManager () <UIAlertViewDelegate> {
+@class UITapGestureRecognizer;
+
+@interface BITFeedbackManager () {
 }
 
 
+///-----------------------------------------------------------------------------
+/// @name Delegate
+///-----------------------------------------------------------------------------
+
+/**
+ Sets the `BITFeedbackManagerDelegate` delegate.
+ 
+ Can be set to be notified when new feedback is received from the server.
+ 
+ The delegate is automatically set by using `[BITHockeyManager setDelegate:]`. You
+ should not need to set this delegate individually.
+ 
+ @see `[BITHockeyManager setDelegate:]`
+ */
+@property (nonatomic, weak) id<BITFeedbackManagerDelegate> delegate;
+
+
 @property (nonatomic, strong) NSMutableArray *feedbackList;
-@property (nonatomic, strong) NSString *token;
+@property (nonatomic, copy) NSString *token;
 
 
 // used by BITHockeyManager if disable status is changed
 @property (nonatomic, getter = isFeedbackManagerDisabled) BOOL disableFeedbackManager;
+// TapRecognizer used in case feedback observation mode is BITFeedbackObservationModeThreeFingerTap is set.
+@property(nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
+@property(nonatomic) BOOL observationModeOnScreenshotEnabled;
+@property(nonatomic) BOOL observationModeThreeFingerTapEnabled;
+
 
 @property (nonatomic, strong) BITFeedbackListViewController *currentFeedbackListViewController;
 @property (nonatomic, strong) BITFeedbackComposeViewController *currentFeedbackComposeViewController;
@@ -56,10 +82,14 @@
 @property (nonatomic, copy) NSString *userEmail;
 
 
+
 // Fetch user meta data
 - (BOOL)updateUserIDUsingKeychainAndDelegate;
 - (BOOL)updateUserNameUsingKeychainAndDelegate;
 - (BOOL)updateUserEmailUsingKeychainAndDelegate;
+
+// check if the user wants to influence when fetching of new messages may be done
+- (BOOL)allowFetchingNewMessages;
 
 // load new messages from the server
 - (void)updateMessagesList;
@@ -70,7 +100,7 @@
 - (NSUInteger)numberOfMessages;
 - (BITFeedbackMessage *)messageAtIndex:(NSUInteger)index;
 
-- (void)submitMessageWithText:(NSString *)text;
+- (void)submitMessageWithText:(NSString *)text andAttachments:(NSArray *)photos;
 - (void)submitPendingMessages;
 
 // Returns YES if manual user data can be entered, required or optional

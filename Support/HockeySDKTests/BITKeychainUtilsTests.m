@@ -1,23 +1,20 @@
 //
-//  BITKeychainHelperTests.m
+//  BITKeychainUtilsTests.m
 //  HockeySDK
 //
 //  Created by Stephan Diederich on 23.09.13.
-//  Copyright (c) 2013 __MyCompanyName__. All rights reserved.
+//
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-#define HC_SHORTHAND
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
-
-#define MOCKITO_SHORTHAND
 #import <OCMockitoIOS/OCMockitoIOS.h>
 
 #import "HockeySDK.h"
 #import "BITKeychainUtils.h"
 
-@interface BITKeychainUtilsTests : SenTestCase {
+@interface BITKeychainUtilsTests : XCTestCase {
 
 }
 @end
@@ -32,11 +29,6 @@
 
 - (void)tearDown {
   // Tear-down code here.
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wimplicit"
-  __gcov_flush();
-# pragma clang diagnostic pop
-
   [super tearDown];
 }
 
@@ -47,7 +39,7 @@
                                     forServiceName:@"Test"
                                     updateExisting:YES
                                              error:nil];
-  assertThatBool(success, equalToBool(YES));
+  assertThatBool(success, isTrue());
   NSString *pass = [BITKeychainUtils getPasswordForUsername:@"Peter"
                                              andServiceName:@"Test"
                                                       error:NULL];
@@ -60,9 +52,9 @@
                                        andPassword:@"PanThisDeviceOnly"
                                     forServiceName:@"Test"
                                     updateExisting:YES
-                                     accessibility:kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+                                     accessibility:kSecAttrAccessibleAlwaysThisDeviceOnly
                                              error:nil];
-  assertThatBool(success, equalToBool(YES));
+  assertThatBool(success, isTrue());
   NSString *pass = [BITKeychainUtils getPasswordForUsername:@"Peter"
                                              andServiceName:@"Test"
                                                       error:NULL];
@@ -77,7 +69,7 @@
                    updateExisting:YES
                             error:nil];
   BOOL success = [BITKeychainUtils deleteItemForUsername:@"Peter" andServiceName:@"Test" error:nil];
-  assertThatBool(success, equalToBool(YES));
+  assertThatBool(success, isTrue());
   
   NSString *pass = [BITKeychainUtils getPasswordForUsername:@"Peter"
                                              andServiceName:@"Test"

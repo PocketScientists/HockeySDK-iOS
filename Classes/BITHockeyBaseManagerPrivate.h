@@ -28,28 +28,25 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "BITHockeyManager.h"
 
 @class BITHockeyBaseManager;
 @class BITHockeyBaseViewController;
 
 @interface BITHockeyBaseManager()
 
-@property (nonatomic, strong) NSString *appIdentifier;
+@property (nonatomic, copy) NSString *appIdentifier;
 
-- (id)initWithAppIdentifier:(NSString *)appIdentifier isAppStoreEnvironment:(BOOL)isAppStoreEnvironment;
+@property (nonatomic, assign, readonly) BITEnvironment appEnvironment;
+
+- (instancetype)initWithAppIdentifier:(NSString *)appIdentifier appEnvironment:(BITEnvironment)environment;
 
 - (void)startManager;
-
-/** the value this object was initialized with */
-- (BOOL)isAppStoreEnvironment;
-
-/** Check if the device is running an iOS version previous to iOS 7 */
-- (BOOL)isPreiOS7Environment;
 
 /** 
  * by default, just logs the message
  *
- * can be overriden by subclasses to do their own error handling,
+ * can be overridden by subclasses to do their own error handling,
  * e.g. to show UI
  *
  * @param error NSError
@@ -59,7 +56,7 @@
 /** url encoded version of the appIdentifier
  
  where appIdentifier is either the value this object was initialized with,
- or the main bundles CFBundleIdentifier if appIdentifier ist nil
+ or the main bundles CFBundleIdentifier if appIdentifier is nil
  */
 - (NSString *)encodedAppIdentifier;
 
@@ -67,10 +64,23 @@
 - (NSString *)getDevicePlatform;
 - (NSString *)executableUUID;
 
+#if !defined (HOCKEYSDK_CONFIGURATION_ReleaseCrashOnlyExtensions)
 // UI helpers
 - (UIWindow *)findVisibleWindow;
 - (UINavigationController *)customNavigationControllerWithRootViewController:(UIViewController *)viewController presentationStyle:(UIModalPresentationStyle)presentationStyle;
+
+/**
+ *  Present an UIAlertController on the visible root UIViewController.
+ *
+ *  Uses `visibleWindowRootViewController` to find a controller on which to present the UIAlertController on.
+ *  This method is always dispatched on the main queue.
+ *
+ *  @param alertController The UIAlertController to be presented.
+ */
+- (void)showAlertController:(UIViewController *)alertController;
+
 - (void)showView:(UIViewController *)viewController;
+#endif
 
 // Date helpers
 - (NSDate *)parseRFC3339Date:(NSString *)dateString;

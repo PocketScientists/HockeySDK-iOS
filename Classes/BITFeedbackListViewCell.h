@@ -31,19 +31,13 @@
 #import "BITFeedbackMessage.h"
 #import "BITAttributedLabel.h"
 
-/**
- * Cell style depending on the iOS version
- */
-typedef NS_ENUM(NSUInteger, BITFeedbackListViewCellPresentatationStyle) {
-  /**
-   * Default is iOS 6 style
-   */
-  BITFeedbackListViewCellPresentatationStyleDefault = 0,
-  /**
-   * Draw cells in the iOS 7 style
-   */
-  BITFeedbackListViewCellPresentatationStyleOS7 = 1
-};
+@class BITFeedbackMessageAttachment;
+
+@protocol BITFeedbackListViewCellDelegate <NSObject>
+
+- (void)listCell:(id)cell didSelectAttachment:(BITFeedbackMessageAttachment *)attachment;
+
+@end
 
 /**
  * Cell background style
@@ -59,16 +53,19 @@ typedef NS_ENUM(NSUInteger, BITFeedbackListViewCellBackgroundStyle) {
   BITFeedbackListViewCellBackgroundStyleAlternate = 1
 };
 
+
 @interface BITFeedbackListViewCell : UITableViewCell
 
 @property (nonatomic, strong) BITFeedbackMessage *message;
-
-@property (nonatomic) BITFeedbackListViewCellPresentatationStyle style;
 
 @property (nonatomic) BITFeedbackListViewCellBackgroundStyle backgroundStyle;
 
 @property (nonatomic, strong) BITAttributedLabel *labelText;
 
+@property (nonatomic, weak) id<BITFeedbackListViewCellDelegate> delegate;
+
 + (CGFloat) heightForRowWithMessage:(BITFeedbackMessage *)message tableViewWidth:(CGFloat)width;
+
+- (void)setAttachments:(NSArray *)attachments;
 
 @end

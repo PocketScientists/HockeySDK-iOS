@@ -31,8 +31,18 @@
 
 #if HOCKEYSDK_FEATURE_STORE_UPDATES
 
-@interface BITStoreUpdateManager () <UIAlertViewDelegate> {
+@interface BITStoreUpdateManager () {
 }
+
+///-----------------------------------------------------------------------------
+/// @name Delegate
+///-----------------------------------------------------------------------------
+
+/**
+ Sets the optional `BITStoreUpdateManagerDelegate` delegate.
+ */
+@property (nonatomic, weak) id<BITStoreUpdateManagerDelegate> delegate;
+
 
 // is an update available?
 @property (nonatomic, assign, getter=isUpdateAvailable) BOOL updateAvailable;

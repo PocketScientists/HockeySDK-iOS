@@ -39,6 +39,29 @@
 
 @optional
 
+///-----------------------------------------------------------------------------
+/// @name Update
+///-----------------------------------------------------------------------------
+
+/**
+ Return if update alert should be shown
+
+ If you want to display your own user interface when there is an update available,
+ implement this method, present your user interface and return _NO_. In this case
+ it is your responsibility to call `BITUpdateManager showUpdateView`
+
+ Note: This delegate will be invoked on startup and every time the app becomes
+ active again!
+
+ When returning _YES_ the default blocking UI will be shown.
+
+ When running the app from the App Store, this delegate is ignored.
+
+ @param updateManager The `BITUpdateManager` instance invoking this delegate
+ @param shortVersion The latest available version
+ @param version The latest available version
+ */
+- (BOOL)shouldDisplayUpdateAlertForUpdateManager:(BITUpdateManager *)updateManager forShortVersion:(NSString *)shortVersion forVersion:(NSString *)version;
 
 ///-----------------------------------------------------------------------------
 /// @name Expiry
@@ -106,23 +129,32 @@
 - (BOOL)updateManagerShouldSendUsageData:(BITUpdateManager *)updateManager;
 
 
-#pragma mark - Deprecated
-
 ///-----------------------------------------------------------------------------
-/// @name Update View Presentation Helper
+/// @name Privacy
 ///-----------------------------------------------------------------------------
 
-/**
- Provide a parent view controller for the update user interface
+/** Implement this method to be notified before an update starts.
  
- If you don't have a `rootViewController` set on your `UIWindow` and the SDK cannot
- automatically find the current top most `UIViewController`, you can provide the 
- `UIViewController` that should be used to present the update user interface modal.
+ The update manager will send this delegate message _just_ before the system
+ call to update the application is placed, but after the user has already chosen
+ to install the update.
+ 
+ There is no guarantee that the update will actually start after this delegate
+ message is sent.
 
  @param updateManager The `BITUpdateManager` instance invoking this delegate
- 
- @deprecated Please use `BITHockeyManagerDelegate viewControllerForHockeyManager:componentManager:` instead
  */
-- (UIViewController *)viewControllerForUpdateManager:(BITUpdateManager *)updateManager DEPRECATED_ATTRIBUTE;
+- (BOOL)willStartDownloadAndUpdate:(BITUpdateManager *)updateManager;
+
+/**
+ Invoked right before the app will exit to allow app update to start (>= iOS8 only)
+ 
+ The iOS installation mechanism only starts if the app the should be updated is currently
+ not running. On all iOS versions up to iOS 7, the system did automatically exit the app
+ in these cases. Since iOS 8 this isn't done any longer.
+ 
+ @param updateManager The `BITUpdateManager` instance invoking this delegate
+ */
+- (void)updateManagerWillExitApp:(BITUpdateManager *)updateManager;
 
 @end

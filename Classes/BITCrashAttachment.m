@@ -26,39 +26,23 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#import "HockeySDK.h"
+
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
+
 #import "BITCrashAttachment.h"
 
 @implementation BITCrashAttachment
 
 - (instancetype)initWithFilename:(NSString *)filename
-                  attachmentData:(NSData *)attachmentData
+             crashAttachmentData:(NSData *)crashAttachmentData
                      contentType:(NSString *)contentType
 {
-  if (self = [super init]) {
-    _filename = filename;
-    _attachmentData = attachmentData;
-    _contentType = contentType;
-  }
+  self = [super initWithFilename:filename hockeyAttachmentData:crashAttachmentData contentType:contentType];
   
   return self;
 }
 
-
-#pragma mark - NSCoder
-
-- (void)encodeWithCoder:(NSCoder *)encoder {
-  [encoder encodeObject:self.filename forKey:@"filename"];
-  [encoder encodeObject:self.attachmentData forKey:@"data"];
-  [encoder encodeObject:self.contentType forKey:@"contentType"];
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-  if ((self = [super init])) {
-    _filename = [decoder decodeObjectForKey:@"filename"];
-    _attachmentData = [decoder decodeObjectForKey:@"data"];
-    _contentType = [decoder decodeObjectForKey:@"contentType"];
-  }
-  return self;
-}
-
 @end
+
+#endif

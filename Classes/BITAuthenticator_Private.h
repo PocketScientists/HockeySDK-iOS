@@ -27,12 +27,27 @@
  */
 
 
-#import "BITAuthenticator.h"
-#import "BITHockeyBaseManagerPrivate.h"
+#import "HockeySDK.h"
+
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR
+
 #import "BITAuthenticationViewController.h"
+
 @class BITHockeyAppClient;
 
-@interface BITAuthenticator ()<BITAuthenticationViewControllerDelegate, UIAlertViewDelegate>
+@interface BITAuthenticator ()<BITAuthenticationViewControllerDelegate>
+
+/**
+ Delegate that can be used to do any last minute configurations on the
+ presented viewController.
+ 
+ The delegate is automatically set by using `[BITHockeyManager setDelegate:]`. You
+ should not need to set this delegate individually.
+ 
+ @see `[BITHockeyManager setDelegate:]`
+ @see BITAuthenticatorDelegate
+ */
+@property (nonatomic, weak) id<BITAuthenticatorDelegate> delegate;
 
 /**
  * must be set
@@ -78,6 +93,13 @@
 
 #pragma mark - Testing
 - (void) storeInstallationIdentifier:(NSString*) identifier withType:(BITAuthenticatorIdentificationType) type;
+- (void)validateWithCompletion:(void (^)(BOOL validated, NSError *))completion;
+- (void)authenticationViewController:(UIViewController *)viewController
+       handleAuthenticationWithEmail:(NSString *)email
+                             request:(NSURLRequest *)request
+                          completion:(void (^)(BOOL, NSError *))completion;
 - (BOOL) needsValidation;
 - (void) authenticate;
 @end
+
+#endif /* HOCKEYSDK_FEATURE_AUTHENTICATOR */

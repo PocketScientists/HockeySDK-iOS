@@ -76,16 +76,6 @@ typedef NS_ENUM(NSInteger, BITStoreUpdateSetting) {
 @interface BITStoreUpdateManager : BITHockeyBaseManager
 
 ///-----------------------------------------------------------------------------
-/// @name Delegate
-///-----------------------------------------------------------------------------
-
-/**
- Sets the optional `BITStoreUpdateManagerDelegate` delegate.
- */
-@property (nonatomic, weak) id delegate;
-
-
-///-----------------------------------------------------------------------------
 /// @name Update Checking
 ///-----------------------------------------------------------------------------
 
@@ -130,7 +120,7 @@ typedef NS_ENUM(NSInteger, BITStoreUpdateSetting) {
  @see checkForUpdateOnLaunch
  @see checkForUpdate
  */
-@property (nonatomic, strong) NSString *countryCode;
+@property (nonatomic, copy) NSString *countryCode;
 
 
 /**

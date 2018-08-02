@@ -28,7 +28,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "BITHTTPOperation.h" //needed for typedef
+extern NSString * const kBITHockeyAppClientBoundary;
 
 /**
  *  Generic Hockey API client
@@ -60,56 +60,6 @@
 - (NSMutableURLRequest *) requestWithMethod:(NSString*) method
                                        path:(NSString *) path
                                  parameters:(NSDictionary *) params;
-/**
- *	Creates an operation for the given NSURLRequest
- *
- *	@param	request	the request that should be handled
- *	@param	completion	completionBlock that is called once the operation finished
- *
- *	@return	operation, which can be queued via enqueueHTTPOperation:
- */
-- (BITHTTPOperation*) operationWithURLRequest:(NSURLRequest*) request
-                                   completion:(BITNetworkCompletionBlock) completion;
-
-/**
- *	Creates an operation for the given path, and enqueues it
- *
- *	@param	path	the request path to check
- *	@param	params parameters for the request
- *	@param	completion	completionBlock that is called once the operation finished
- *
- */
-- (void) getPath:(NSString*) path
-      parameters:(NSDictionary *) params
-      completion:(BITNetworkCompletionBlock) completion;
-
-/**
- *	Creates an operation for the given path, and enqueues it
- *
- *	@param	path	the request path to check
- *	@param	params parameters for the request
- *	@param	completion	completionBlock that is called once the operation finished
- *
- */
-- (void) postPath:(NSString*) path
-       parameters:(NSDictionary *) params
-       completion:(BITNetworkCompletionBlock) completion;
-/**
- *	adds the given operation to the internal queue
- *
- *	@param	operation	operation to add
- */
-- (void) enqeueHTTPOperation:(BITHTTPOperation *) operation;
-
-/**
- *	cancels the specified operations
- *
- *	@param	path	the path which operation should be cancelled. Can be nil to match all
- *	@param	method	the method which operations to cancel. Can be nil to match all
- *  @return number of operations cancelled
- */
-- (NSUInteger) cancelOperationsWithPath:(NSString*) path
-                                 method:(NSString*) method;
 
 /**
  *	Access to the internal operation queue
@@ -118,7 +68,7 @@
 
 #pragma mark - Helpers
 /**
- *	create a post body from the given value, key and boundary. This is a convenience call to
+ *	create a post body from the given value, key and boundary. This is a convenience call to 
  *  dataWithPostValue:forKey:contentType:boundary and aimed at NSString-content.
  *
  *	@param	value	-

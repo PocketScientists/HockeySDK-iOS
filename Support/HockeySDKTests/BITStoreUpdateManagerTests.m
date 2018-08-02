@@ -1,22 +1,17 @@
 //
-//  HockeySDKTests.m
-//  HockeySDKTests
+//  BITStoreUpdateManagerTests.m
+//  HockeySDK
 //
 //  Created by Andreas Linde on 13.03.13.
 //
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-// Uncomment the next two lines to use OCHamcrest for test assertions:
-#define HC_SHORTHAND
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
-
-// Uncomment the next two lines to use OCMockito for mock objects:
-#define MOCKITO_SHORTHAND
 #import <OCMockitoIOS/OCMockitoIOS.h>
 
-#import "HockeySDKFeatureConfig.h"
+#import "HockeySDK.h"
 #import "BITStoreUpdateManager.h"
 #import "BITStoreUpdateManagerPrivate.h"
 #import "BITHockeyBaseManager.h"
@@ -25,30 +20,25 @@
 #import "BITTestHelper.h"
 
 
-@interface BITStoreUpdateManagerTests : SenTestCase
+@interface BITStoreUpdateManagerTests : XCTestCase
+
+@property(nonatomic, strong) BITStoreUpdateManager *storeUpdateManager;
 
 @end
 
 
-@implementation BITStoreUpdateManagerTests {
-  BITStoreUpdateManager *_storeUpdateManager;
-}
+@implementation BITStoreUpdateManagerTests
 
 - (void)setUp {
   [super setUp];
   
   // Set-up code here.
-  _storeUpdateManager = [[BITStoreUpdateManager alloc] initWithAppIdentifier:nil isAppStoreEnvironment:YES];
+  self.storeUpdateManager = [[BITStoreUpdateManager alloc] initWithAppIdentifier:nil appEnvironment:BITEnvironmentAppStore];
 }
 
 - (void)tearDown {
   // Tear-down code here.
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wimplicit"
-  __gcov_flush();
-# pragma clang diagnostic pop
-  
-  _storeUpdateManager = nil;
+  self.storeUpdateManager = nil;
   
   [super tearDown];
 }
@@ -59,6 +49,8 @@
 - (NSDictionary *)jsonFromFixture:(NSString *)fixture {
   NSString *dataString = [BITTestHelper jsonFixture:fixture];
   
+  if (!dataString) return nil;
+  
   NSData *data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
   NSError *error = nil;
   NSDictionary *json = (NSDictionary *)[NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
@@ -67,9 +59,9 @@
 }
 
 - (void)startManager {
-  _storeUpdateManager.enableStoreUpdateManager = YES;
-  [_storeUpdateManager startManager];
-  [NSObject cancelPreviousPerformRequestsWithTarget:_storeUpdateManager selector:@selector(checkForUpdateDelayed) object:nil];
+  self.storeUpdateManager.enableStoreUpdateManager = YES;
+  [self.storeUpdateManager startManager];
+  [NSObject cancelPreviousPerformRequestsWithTarget:self.storeUpdateManager selector:@selector(checkForUpdateDelayed) object:nil];
 }
 
 
@@ -77,131 +69,131 @@
 
 - (void)testUpdateCheckDailyFirstTimeEver {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertTrue(result, @"Checking daily first time ever");
+  XCTAssertTrue(result, @"Checking daily first time ever");
 }
 
 - (void)testUpdateCheckDailyFirstTimeTodayLastCheckPreviousDay {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateDateOfLastCheck"]) willReturn:[NSDate dateWithTimeIntervalSinceNow:-(60*60*24)]];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.updateSetting = BITStoreUpdateCheckDaily;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.updateSetting = BITStoreUpdateCheckDaily;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertTrue(result, @"Checking daily first time today with last check done previous day");
+  XCTAssertTrue(result, @"Checking daily first time today with last check done previous day");
 }
 
 - (void)testUpdateCheckDailySecondTimeOfTheDay {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.lastCheck = [NSDate date];
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.lastCheck = [NSDate date];
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertFalse(result, @"Checking daily second time of the day");
+  XCTAssertFalse(result, @"Checking daily second time of the day");
 }
 
 - (void)testUpdateCheckWeeklyFirstTimeEver {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.updateSetting = BITStoreUpdateCheckWeekly;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.updateSetting = BITStoreUpdateCheckWeekly;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertTrue(result, @"Checking weekly first time ever");
+  XCTAssertTrue(result, @"Checking weekly first time ever");
 }
 
 - (void)testUpdateCheckWeeklyFirstTimeTodayLastCheckPreviousWeek {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateDateOfLastCheck"]) willReturn:[NSDate dateWithTimeIntervalSinceNow:-(60*60*24*7)]];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.updateSetting = BITStoreUpdateCheckWeekly;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.updateSetting = BITStoreUpdateCheckWeekly;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertTrue(result, @"Checking weekly first time after one week");
+  XCTAssertTrue(result, @"Checking weekly first time after one week");
 }
 
 - (void)testUpdateCheckWeeklyFirstTimeFiveDaysAfterPreviousCheck {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateDateOfLastCheck"]) willReturn:[NSDate dateWithTimeIntervalSinceNow:-(60*60*24*5)]];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.updateSetting = BITStoreUpdateCheckWeekly;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.updateSetting = BITStoreUpdateCheckWeekly;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertFalse(result, @"Checking weekly first time five days after previous check");
+  XCTAssertFalse(result, @"Checking weekly first time five days after previous check");
 }
 
 - (void)testUpdateCheckManuallyFirstTimeEver {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.updateSetting = BITStoreUpdateCheckManually;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.updateSetting = BITStoreUpdateCheckManually;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertFalse(result, @"Checking manually first time ever");
+  XCTAssertFalse(result, @"Checking manually first time ever");
 }
 
 - (void)testUpdateCheckManuallyFirstTimeTodayLastCheckDonePreviousDay {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateDateOfLastCheck"]) willReturn:[NSDate dateWithTimeIntervalSinceNow:-(60*60*24)]];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
-  _storeUpdateManager.updateSetting = BITStoreUpdateCheckManually;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.updateSetting = BITStoreUpdateCheckManually;
   
   [self startManager];
   
-  BOOL result = [_storeUpdateManager shouldAutoCheckForUpdates];
+  BOOL result = [self.storeUpdateManager shouldAutoCheckForUpdates];
   
-  STAssertFalse(result, @"Checking manually first time ever");
+  XCTAssertFalse(result, @"Checking manually first time ever");
 }
 
 
 #pragma mark - JSON Response Processing
 
 - (void)testProcessStoreResponseWithEmptyData {
-  BOOL result = [_storeUpdateManager processStoreResponseWithString:nil];
+  BOOL result = [self.storeUpdateManager processStoreResponseWithString:nil];
   
-  STAssertFalse(result, @"Empty data was handled correctly");
+  XCTAssertFalse(result, @"Empty data was handled correctly");
 }
 
 - (void)testProcessStoreResponseWithInvalidData {
   NSString *invalidString = @"8a@c&)if";
-  BOOL result = [_storeUpdateManager processStoreResponseWithString:invalidString];
+  BOOL result = [self.storeUpdateManager processStoreResponseWithString:invalidString];
   
-  STAssertFalse(result, @"Invalid JSON data was handled correctly");
+  XCTAssertFalse(result, @"Invalid JSON data was handled correctly");
 }
 
 - (void)testProcessStoreResponseWithUnknownBundleIdentifier {
   NSString *dataString = [BITTestHelper jsonFixture:@"StoreBundleIdentifierUnknown"];
-  BOOL result = [_storeUpdateManager processStoreResponseWithString:dataString];
+  BOOL result = [self.storeUpdateManager processStoreResponseWithString:dataString];
   
-  STAssertFalse(result, @"Valid but empty json data was handled correctly");
+  XCTAssertFalse(result, @"Valid but empty json data was handled correctly");
 }
 
 - (void)testProcessStoreResponseWithKnownBundleIdentifier {
   NSString *dataString = [BITTestHelper jsonFixture:@"StoreBundleIdentifierKnown"];
-  BOOL result = [_storeUpdateManager processStoreResponseWithString:dataString];
+  BOOL result = [self.storeUpdateManager processStoreResponseWithString:dataString];
 
-  STAssertTrue(result, @"Valid and correct JSON data was handled correctly");
+  XCTAssertTrue(result, @"Valid and correct JSON data was handled correctly");
 }
 
 
@@ -211,30 +203,30 @@
 
 - (void)testFirstStartHasNewVersionReturnsFalseWithFirstCheck {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
 
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
 
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertFalse(result, @"There is no udpate available");
+  XCTAssertFalse(result, @"There is no udpate available");
 }
 
 - (void)testFirstStartHasNewVersionReturnsFalseWithSameVersion {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastStoreVersion"]) willReturn:@"4.1.2"];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastUUID"]) willReturn:@""];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
   
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertFalse(result, @"There is no udpate available");
+  XCTAssertFalse(result, @"There is no udpate available");
 }
 
 
@@ -242,30 +234,30 @@
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastStoreVersion"]) willReturn:@"4.1.2"];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastUUID"]) willReturn:@"1"];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
   
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertFalse(result, @"There is no udpate available");
+  XCTAssertFalse(result, @"There is no udpate available");
 }
 
 - (void)testFirstStartHasNewVersionReturnsTrue {
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastStoreVersion"]) willReturn:@"4.1.1"];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastUUID"]) willReturn:@""];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
   
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertTrue(result, @"There is an udpate available");
+  XCTAssertTrue(result, @"There is an udpate available");
 }
 
 
@@ -273,15 +265,15 @@
   NSUserDefaults *mockUserDefaults = mock([NSUserDefaults class]);
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastStoreVersion"]) willReturn:@"4.1.3"];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastUUID"]) willReturn:@""];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
   
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertFalse(result, @"There is no udpate available");
+  XCTAssertFalse(result, @"There is no udpate available");
 }
 
 - (void)testReportedVersionIsBeingIgnored {
@@ -289,15 +281,15 @@
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastStoreVersion"]) willReturn:@"4.1.1"];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastUUID"]) willReturn:@""];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateIgnoredVersion"]) willReturn:@"4.1.2"];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
   
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertFalse(result, @"The newer version is being ignored");
+  XCTAssertFalse(result, @"The newer version is being ignored");
 }
 
 - (void)testReportedVersionIsNewerThanTheIgnoredVersion {
@@ -305,15 +297,15 @@
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastStoreVersion"]) willReturn:@"4.1.1"];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateLastUUID"]) willReturn:@""];
   [given([mockUserDefaults objectForKey:@"BITStoreUpdateIgnoredVersion"]) willReturn:@"4.1.1"];
-  _storeUpdateManager.userDefaults = mockUserDefaults;
+  self.storeUpdateManager.userDefaults = mockUserDefaults;
   
   [self startManager];
   
   NSDictionary *json = [self jsonFromFixture:@"StoreBundleIdentifierKnown"];
   
-  BOOL result = [_storeUpdateManager hasNewVersion:json];
+  BOOL result = [self.storeUpdateManager hasNewVersion:json];
   
-  STAssertTrue(result, @"The newer version is not ignored");
+  XCTAssertTrue(result, @"The newer version is not ignored");
 }
 
 @end

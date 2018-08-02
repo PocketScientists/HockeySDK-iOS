@@ -21,5 +21,13 @@ profile
 *~.nib
 profile
 
-documentation/
+
+# App Code
+**/.idea/
+**/.idea/**
+
+# Infer
+**/infer-out
+
+Generated/
 Products/

@@ -1,51 +1,55 @@
-## Version 3.5.5
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![Version](http://cocoapod-badges.herokuapp.com/v/HockeySDK/badge.png)](http://cocoadocs.org/docsets/HockeySDK)
+[![Slack Status](https://slack.hockeyapp.net/badge.svg)](https://slack.hockeyapp.net)
 
-- [Changelog](http://www.hockeyapp.net/help/sdk/ios/3.5.5/docs/docs/Changelog.html)
-
-
-## Introduction
+## Version 5.1.2
 
 HockeySDK-iOS implements support for using HockeyApp in your iOS applications.
 
 The following features are currently supported:
 
-1. **Collect crash reports:** If your app crashes, a crash log with the same format as from the Apple Crash Reporter is written to the device's storage. If the user starts the app again, he is asked to submit the crash report to HockeyApp. This works for both beta and live apps, i.e. those submitted to the App Store!
+1. **Crash Reporting:** If your app crashes, a crash log with the same format as from the Apple Crash Reporter is written to the device's storage. If the user starts the app again, they are asked to submit the crash report to HockeyApp. This works for both beta and live apps, i.e., those submitted to the App Store.
 
-2. **Update Ad-Hoc / Enterprise apps:** The app will check with HockeyApp if a new version for your Ad-Hoc or Enterprise build is available. If yes, it will show an alert view to the user and let him see the release notes, the version history and start the installation process right away. 
+2. **User Metrics:** Understand user behavior to improve your app. Track usage through daily and monthly active users, monitor crash impacted users, as well as customer engagement through session count. You can now track **Custom Events** in your app, understand user actions and see the aggregates on the HockeyApp portal.
 
-3. **Update notification for app store:** The app will check if a new version for your app store release is available. If yes, it will show an alert view to the user and let him open your app in the App Store app. (Disabled by default!)
+3. **Update Ad-Hoc / Enterprise apps:** The app will check with HockeyApp if a new version for your Ad-Hoc or Enterprise build is available. If yes, it will show an alert view to the user and let them see the release notes, the version history and start the installation process right away. 
 
-4. **Feedback:** Collect feedback from your users from within your app and communicate directly with them using the HockeyApp backend.
+4. **Update notification for app store:** The app will check if a new version for your app store release is available. If yes, it will show an alert view to the user and let them open your app in the App Store app. (Disabled by default!)
 
-5. **Authenticate:** Identify and authenticate users of Ad-Hoc or Enterprise builds
+5. **Feedback:** Collect feedback from your users from within your app and communicate directly with them using the HockeyApp backend.
 
+6. **Authenticate:** Identify and authenticate users of Ad-Hoc or Enterprise builds
 
-The main SDK class is `BITHockeyManager`. It initializes all modules and provides access to them, so they can be further adjusted if required. Additionally all modules provide their own protocols.
+## 1. Setup
 
-## Prerequisites
+It is super easy to use HockeyApp in your iOS app. Have a look at our [documentation](https://www.hockeyapp.net/help/sdk/ios/5.1.2/index.html) and onboard your app within minutes.
 
-1. Before you integrate HockeySDK into your own app, you should add the app to HockeyApp if you haven't already. Read [this how-to](http://support.hockeyapp.net/kb/how-tos/how-to-create-a-new-app) on how to do it.
-2. We also assume that you already have a project in Xcode and that this project is opened in Xcode 4.
-3. The SDK supports iOS 5.0 or newer.
+## 2. Documentation
 
+Please visit [our landing page](https://www.hockeyapp.net/help/sdk/ios/5.1.2/index.html) as a starting point for all of our documentation.
 
-## Installation & Setup
+Please check out our [changelog](http://www.hockeyapp.net/help/sdk/ios/5.1.2/changelog.html), as well as our [troubleshooting section](https://www.hockeyapp.net/help/sdk/ios/5.1.2/installation--setup.html#troubleshooting).
 
-- [Installation & Setup](http://www.hockeyapp.net/help/sdk/ios/3.5.5/docs/docs/Guide-Installation-Setup.html) (Recommended)
-- [Installation & Setup Advanced](http://www.hockeyapp.net/help/sdk/ios/3.5.5/docs/docs/Guide-Installation-Setup-Advanced.html) (Using Git submodule and Xcode sub-project)
-- [Identify and authenticate users of Ad-Hoc or Enterprise builds](http://www.hockeyapp.net/help/sdk/ios/3.5.5/docs/docs/HowTo-Authenticating-Users-on-iOS.html)
-- [Migration from previous SDK Versions](http://www.hockeyapp.net/help/sdk/ios/3.5.5/docs/docs/Guide-Migration-Kits.html)
-- [Mac Desktop Uploader](http://support.hockeyapp.net/kb/how-tos/how-to-upload-to-hockeyapp-on-a-mac)
+## 3. Contributing
 
+We're looking forward to your contributions via pull requests.
 
-## Xcode Documentation
+### 3.1 Development environment
 
-This documentation provides integrated help in Xcode for all public APIs and a set of additional tutorials and HowTo articles.
+* A Mac running the latest version of OS X.
+* Get the latest Xcode from the Mac App Store.
+* [Jazzy](https://github.com/realm/jazzy) to generate documentation.
+* [CocoaPods](https://cocoapods.org/) to test integration with CocoaPods.
+* [Carthage](https://github.com/Carthage/Carthage) to test integration with Carthage.
 
-1. Download the [HockeySDK-iOS documentation](http://hockeyapp.net/releases/).
+### 3.2 Code of Conduct
 
-2. Unzip the file. A new folder `HockeySDK-iOS-documentation` is created.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-3. Copy the content into ~`/Library/Developer/Shared/Documentation/DocSets`
+### 3.3 Contributor License
 
-The documentation is also available via the following URL: [http://hockeyapp.net/help/sdk/ios/3.5.5/](http://hockeyapp.net/help/sdk/ios/3.5.5/)
+You must sign a [Contributor License Agreement](https://cla.microsoft.com/) before submitting your pull request. To complete the Contributor License Agreement (CLA), you will need to submit a request via the [form](https://cla.microsoft.com/) and then electronically sign the CLA when you receive the email containing the link to the document. You need to sign the CLA only once to cover submission to any Microsoft OSS project. 
+
+## 4. Contact
+
+If you have further questions or are running into trouble that cannot be resolved by any of the steps [in our troubleshooting section](https://www.hockeyapp.net/help/sdk/ios/5.1.2/installation--setup.html#troubleshooting), feel free to open an issue here, contact us at [support@hockeyapp.net](mailto:support@hockeyapp.net) or join our [Slack](https://slack.hockeyapp.net).

@@ -38,28 +38,29 @@
 #import "BITFeedbackManagerPrivate.h"
 
 #import "BITHockeyBaseManagerPrivate.h"
+#import "BITHockeyAttachment.h"
 
 
 @interface BITFeedbackActivity()
 
 @property (nonatomic, strong) NSMutableArray *items;
+@property (nonatomic, strong, readwrite) UIViewController *activityViewController;
 
 @end
 
 
 @implementation BITFeedbackActivity
-{
-  UIViewController *_activityViewController;
-}
+
+@synthesize activityViewController = _activityViewController;
 
 #pragma mark - NSObject
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     _customActivityImage = nil;
     _customActivityTitle = nil;
     
-    self.items = [NSMutableArray array];;
+    _items = [NSMutableArray array];
   }
   
   return self;
@@ -86,7 +87,7 @@
   if (self.customActivityImage)
     return self.customActivityImage;
 
-  return bit_imageNamed(@"feedbackActiviy.png", BITHOCKEYSDK_BUNDLE);
+  return bit_imageNamed(@"feedbackActivity.png", BITHOCKEYSDK_BUNDLE);
 }
 
 
@@ -96,6 +97,12 @@
   for (UIActivityItemProvider *item in activityItems) {
     if ([item isKindOfClass:[NSString class]]) {
       return YES;
+    } else if ([item isKindOfClass:[UIImage class]]) {
+      return YES;
+    } else if ([item isKindOfClass:[NSData class]]) {
+      return YES;
+    } else if ([item isKindOfClass:[BITHockeyAttachment class]]) {
+      return YES;
     } else if ([item isKindOfClass:[NSURL class]]) {
       return YES;
     }
@@ -104,12 +111,15 @@
 }
 
 - (void)prepareWithActivityItems:(NSArray *)activityItems {
-  for (id item in activityItems) {
+  for (id<NSObject> item in activityItems) {
     if ([item isKindOfClass:[NSString class]] ||
+        [item isKindOfClass:[UIImage class]] ||
+        [item isKindOfClass:[NSData class]] ||
+        [item isKindOfClass:[BITHockeyAttachment class]] ||
         [item isKindOfClass:[NSURL class]]) {
-      [_items addObject:item];
+      [self.items addObject:item];
     } else {
-      BITHockeyLog(@"Unknown item type %@", item);
+      BITHockeyLogWarning(@"WARNING: Unknown item type %@", item);
     }
   }
 }
@@ -121,7 +131,7 @@
     
     BITFeedbackComposeViewController *composeViewController = [manager feedbackComposeViewController];
     composeViewController.delegate = self;
-    [composeViewController prepareWithItems:_items];
+    [composeViewController prepareWithItems:self.items];
     
     _activityViewController = [manager customNavigationControllerWithRootViewController:composeViewController
                                                                       presentationStyle:UIModalPresentationFormSheet];
@@ -130,7 +140,7 @@
   return _activityViewController;
 }
 
-- (void)feedbackComposeViewController:(BITFeedbackComposeViewController *)composeViewController didFinishWithResult:(BITFeedbackComposeResult)composeResult {
+- (void)feedbackComposeViewController:(BITFeedbackComposeViewController *) __unused composeViewController didFinishWithResult:(BITFeedbackComposeResult)composeResult {
   [self activityDidFinish:composeResult == BITFeedbackComposeResultSubmitted];
 }
 

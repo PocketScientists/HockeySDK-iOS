@@ -36,8 +36,22 @@
 /** TODO:
   * if during startup the auth-state is pending, we get never rid of the nag-alertview
  */
-@interface BITUpdateManager () {
-}
+@interface BITUpdateManager ()
+
+///-----------------------------------------------------------------------------
+/// @name Delegate
+///-----------------------------------------------------------------------------
+
+/**
+ Sets the `BITUpdateManagerDelegate` delegate.
+ 
+ The delegate is automatically set by using `[BITHockeyManager setDelegate:]`. You
+ should not need to set this delegate individually.
+ 
+ @see `[BITHockeyManager setDelegate:]`
+ */
+@property (nonatomic, weak) id<BITUpdateManagerDelegate> delegate;
+
 
 // is an update available?
 @property (nonatomic, assign, getter=isUpdateAvailable) BOOL updateAvailable;
@@ -54,26 +68,17 @@
 
 @property (nonatomic, strong) NSNumber *currentAppVersionUsageTime;
 
-@property (nonatomic, strong) NSURLConnection *urlConnection;
-
 @property (nonatomic, copy) NSDate *usageStartTimestamp;
 
 @property (nonatomic, strong) UIView *blockingView;
 
-@property (nonatomic, strong) NSString *companyName;
+@property (nonatomic, copy) NSString *companyName;
 
-@property (nonatomic, strong) NSString *installationIdentification;
+@property (nonatomic, copy) NSString *installationIdentification;
 
-@property (nonatomic, strong) NSString *installationIdentificationType;
+@property (nonatomic, copy) NSString *installationIdentificationType;
 
 @property (nonatomic) BOOL installationIdentified;
-
-// if YES, the API will return an existing JMC config
-// if NO, the API will return only version information
-@property (nonatomic, assign) BOOL checkForTracker;
-
-// Contains the tracker config if received from server
-@property (nonatomic, strong) NSDictionary *trackerConfig;
 
 // used by BITHockeyManager if disable status is changed
 @property (nonatomic, getter = isUpdateManagerDisabled) BOOL disableUpdateManager;
@@ -81,11 +86,15 @@
 // checks for update, informs the user (error, no update found, etc)
 - (void)checkForUpdateShowFeedback:(BOOL)feedback;
 
-// initiates app-download call. displays an system UIAlertView
+- (NSURLRequest *)requestForUpdateCheck;
+
+// initiates app-download call. displays an system UIAlertController
 - (BOOL)initiateAppDownload;
 
 // get/set current active hockey view controller
 @property (nonatomic, strong) BITUpdateViewController *currentHockeyViewController;
+
+@property(nonatomic) BOOL sendUsageData;
 
 // convenience method to get current running version string
 - (NSString *)currentAppVersion;

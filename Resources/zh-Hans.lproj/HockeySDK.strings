@@ -95,14 +95,14 @@
 
 "UpdateWarning" = "警告";
 
-"UpdateNoReleaseNotesAvailable" = "无发行说明。";
+"UpdateNoReleaseNotesAvailable" = "无版本说明。";
 
 
 /* Update Authorization  */
 
 "UpdateAuthorizationProgress" = "授权中...";
 
-"UpdateAuthorizationOffline" = "需要 Internet 连接！";
+"UpdateAuthorizationOffline" = "需要网络连接！";
 
 "UpdateAuthorizationDenied" = "授权被拒绝。请与开发人员联系。";
 
@@ -114,7 +114,7 @@
 
 /* Update Simulator Warning */
 
-"UpdateSimulatorMessage" = "Hockey 更新无法在仿真器中进行。\n这个 itms-services:// 网页连接架构已开始实施但无法正常工作。";
+"UpdateSimulatorMessage" = "Hockey 更新无法在仿真器中进行。\n虽然 itms-services:// URL Scheme已实现，但无法正常工作。";
 
 
 /* Feedback */
@@ -123,10 +123,10 @@
 /* New Message Alert */
 
 /* Alert Title */
-"HockeyFeedbackNewMessageTitle" = "新的意见反馈响应";
+"HockeyFeedbackNewMessageTitle" = "新的反馈回复";
 
 /* Alert Text */
-"HockeyFeedbackNewMessageText" = "你的意见反馈已有一个新的响应，想查看它吗？";
+"HockeyFeedbackNewMessageText" = "你的意见反馈已有一个新的回复，想查看它吗？";
 
 /* Alert Ignore Button */
 "HockeyFeedbackIgnore" = "忽略";
@@ -147,25 +147,25 @@
 "HockeyFeedbackListNeverUpdated" = "从不";
 
 /* Provide Feedback Button Title */
-"HockeyFeedbackListButonWriteFeedback" = "提供意见反馈";
+"HockeyFeedbackListButtonWriteFeedback" = "提供意见反馈";
 
 /* Add a Response Button Title */
-"HockeyFeedbackListButonWriteResponse" = "添加一个响应";
+"HockeyFeedbackListButtonWriteResponse" = "添加一个响应";
 
 /* User Data Set Name Button Title */
-"HockeyFeedbackListButonUserDataSetName" = "设置你的姓名";
+"HockeyFeedbackListButtonUserDataSetName" = "设置你的姓名";
 
 /* User Data Set Email Button Title */
-"HockeyFeedbackListButonUserDataSetEmail" = "设置你的邮件";
+"HockeyFeedbackListButtonUserDataSetEmail" = "设置你的邮件";
 
 /* User Data With Name Button Title */
-"HockeyFeedbackListButonUserDataWithName" = "姓名: %@";
+"HockeyFeedbackListButtonUserDataWithName" = "姓名: %@";
 
 /* User Data With Email Button Title */
-"HockeyFeedbackListButonUserDataWithEmail" = "邮件: %@";
+"HockeyFeedbackListButtonUserDataWithEmail" = "邮件: %@";
 
 /* Button title for deleting all local messages*/
-"HockeyFeedbackListButonDeleteAllMessages" = "删除全部信息";
+"HockeyFeedbackListButtonDeleteAllMessages" = "删除全部信息";
 
 /* Message pending to be send */
 "HockeyFeedbackListMessagePending" = "待定";
@@ -212,6 +212,18 @@
 /* Send button */
 "HockeyFeedbackComposeSend" = "发送";
 
+/* Add Image button for attachment actions */
+"HockeyFeedbackComposeAttachmentAddImage" = "添加图像";
+
+/* Edit button for attachment actions */
+"HockeyFeedbackComposeAttachmentEdit" = "编辑图像";
+
+/* Delete button for attachment actions */
+"HockeyFeedbackComposeAttachmentDelete" = "删除图像";
+
+/* Cancel button for attachment actions */
+"HockeyFeedbackComposeAttachmentCancel" = "取消";
+
 
 /* Set User Data */
 
@@ -250,19 +262,18 @@
 "HockeyAuthenticationViewControllerDataEmailAndPasswordDescription" = "请输入你的 HockeyApp 帐户的电子邮件和密码来授权访问这个 app。";
 "HockeyAuthenticationViewControllerDataEmailDescription" = "请输入你的 HockeyApp 帐户的电子邮件来授权访问这个 app。";
 "HockeyAuthenticationViewControllerEmailPlaceholder" = "email@example.com";
-"HockeyAuthenticationViewControllerPasswordPlaceholder" = "必需的";
+"HockeyAuthenticationViewControllerPasswordPlaceholder" = "必填";
 "HockeyAuthenticationViewControllerEmailDescription" = "邮件";
 "HockeyAuthenticationViewControllerPasswordDescription" = "密码";
 
 /* Error presented to the user if authentication failed because of networking issues */
 "HockeyAuthenticationViewControllerNetworkError" = "你设备的 Internet 连接似乎已断开，导致授权失败。请再试一次。";
 
-/* Error presented to the user if authentication could not be stored on the device */
-"HockeyAuthenticationViewControllerStorageError" = "Your authentication token could not be stored due to a keychain error. Please contact the developer of the app.";
-
-
 "HockeyAuthenticationFailedAuthenticate" = "授权错误。请再试一次或联系这个 app 的开发人员。";
 "HockeyAuthenticationNotMember" = "你未获授权使用这个程序。请联系这个 app 的开发人员。";
 "HockeyAuthenticationContactDeveloper" = "授权错误。请联系这个 app 开发人员。";
 "HockeyAuthenticationWrongEmailPassword" = "你输入了一个无效的电子邮件或密码，请检查后再试一次。";
 "HockeyAuthenticationAuthSecretMissing" = "尚未设置 HockeySDK  authorization secret。请联系这个 app 的开发人员。";
+
+/* Accessibility strings */
+"HockeyAccessibilityHintRequired" = "必填";

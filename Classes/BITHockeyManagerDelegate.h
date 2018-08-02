@@ -41,6 +41,10 @@
 #import "BITFeedbackManagerDelegate.h"
 #endif
 
+#if HOCKEYSDK_FEATURE_STORE_UPDATES
+#import "BITStoreUpdateManagerDelegate.h"
+#endif
+
 #if HOCKEYSDK_FEATURE_AUTHENTICATOR
 #import "BITAuthenticator.h"
 #endif
@@ -62,6 +66,9 @@
 #endif
 #if HOCKEYSDK_FEATURE_FEEDBACK
   , BITFeedbackManagerDelegate
+#endif
+#if HOCKEYSDK_FEATURE_STORE_UPDATES
+  , BITStoreUpdateManagerDelegate
 #endif
 #if HOCKEYSDK_FEATURE_AUTHENTICATOR
   , BITAuthenticatorDelegate
@@ -126,7 +133,7 @@
  `BITFeedbackManager` uses it too for assigning the user to a discussion thread.
  
  In addition, if this returns not nil for `BITFeedbackManager` the user will
- not be asked for any user details by the component, including useerName or userEmail.
+ not be asked for any user details by the component, including userName or userEmail.
  
  You can find out the component requesting the userID like this:
  
@@ -162,7 +169,7 @@
  `BITFeedbackManager` uses it too for assigning the user to a discussion thread.
  
  In addition, if this returns not nil for `BITFeedbackManager` the user will
- not be asked for any user details by the component, including useerName or userEmail.
+ not be asked for any user details by the component, including userName or userEmail.
  
  You can find out the component requesting the user name like this:
  
@@ -198,7 +205,7 @@
  `BITFeedbackManager` uses it too for assigning the user to a discussion thread.
  
  In addition, if this returns not nil for `BITFeedbackManager` the user will
- not be asked for any user details by the component, including useerName or userEmail.
+ not be asked for any user details by the component, including userName or userEmail.
  
  You can find out the component requesting the user email like this:
  

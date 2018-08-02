@@ -30,22 +30,37 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "HockeySDKFeatureConfig.h"
+#import "HockeySDKEnums.h"
 
 @protocol BITHockeyManagerDelegate;
 
 @class BITHockeyBaseManager;
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
 @class BITCrashManager;
+#endif
+#if HOCKEYSDK_FEATURE_UPDATES
 @class BITUpdateManager;
+#endif
+#if HOCKEYSDK_FEATURE_STORE_UPDATES
 @class BITStoreUpdateManager;
+#endif
+#if HOCKEYSDK_FEATURE_FEEDBACK
 @class BITFeedbackManager;
+#endif
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR
 @class BITAuthenticator;
+#endif
+#if HOCKEYSDK_FEATURE_METRICS
+@class BITMetricsManager;
+#endif
 
 /** 
  The HockeySDK manager. Responsible for setup and management of all components
  
  This is the principal SDK class. It represents the entry point for the HockeySDK. The main promises of the class are initializing the SDK modules, providing access to global properties and to all modules. Initialization is divided into several distinct phases:
  
- 1. Setup the [HockeyApp](http://hockeyapp.net/) app identifier and the optional delegate: This is the least required information on setting up the SDK and using it. It does some simple validation of the app identifier and checks if the app is running from the App Store or not. If the [Atlassian JMC framework](http://www.atlassian.com/jmc/) is found, it will disable its Crash Reporting module and configure it with the Jira configuration data from [HockeyApp](http://hockeyapp.net/).
+ 1. Setup the [HockeyApp](http://hockeyapp.net/) app identifier and the optional delegate: This is the least required information on setting up the SDK and using it. It does some simple validation of the app identifier and checks if the app is running from the App Store or not.
  2. Provides access to the SDK modules `BITCrashManager`, `BITUpdateManager`, and `BITFeedbackManager`. This way all modules can be further configured to personal needs, if the defaults don't fit the requirements.
  3. Configure each module.
  4. Start up all modules.
@@ -66,11 +81,14 @@
  
  @warning The SDK is **NOT** thread safe and has to be set up on the main thread!
  
- @warning You should **NOT** change any module configuration after calling `startManager`!
+ @warning Most properties of all components require to be set **BEFORE** calling`startManager`!
 
  */
 
-@interface BITHockeyManager : NSObject
+#import "HockeySDKNullability.h"
+NS_ASSUME_NONNULL_BEGIN
+
+@interface BITHockeyManager: NSObject
 
 #pragma mark - Public Methods
 
@@ -123,7 +141,7 @@
  @param appIdentifier The app identifier that should be used.
  @param delegate `nil` or the class implementing the option protocols
  */
-- (void)configureWithIdentifier:(NSString *)appIdentifier delegate:(id<BITHockeyManagerDelegate>)delegate;
+- (void)configureWithIdentifier:(NSString *)appIdentifier delegate:(nullable id<BITHockeyManagerDelegate>)delegate;
 
 
 /**
@@ -160,7 +178,7 @@
  @param liveIdentifier The app identifier for the app store configurations.
  @param delegate `nil` or the class implementing the optional protocols
  */
-- (void)configureWithBetaIdentifier:(NSString *)betaIdentifier liveIdentifier:(NSString *)liveIdentifier delegate:(id<BITHockeyManagerDelegate>)delegate;
+- (void)configureWithBetaIdentifier:(NSString *)betaIdentifier liveIdentifier:(NSString *)liveIdentifier delegate:(nullable id<BITHockeyManagerDelegate>)delegate;
 
 
 /**
@@ -173,7 +191,6 @@
  */
 - (void)startManager;
 
-
 #pragma mark - Public Properties
 
 ///-----------------------------------------------------------------------------
@@ -182,16 +199,23 @@
 
 
 /**
- * Set the delegate
- *
- * Defines the class that implements the optional protocol `BITHockeyManagerDelegate`.
- *
- * @see BITHockeyManagerDelegate
- * @see BITCrashManagerDelegate
- * @see BITUpdateManagerDelegate
- * @see BITFeedbackManagerDelegate
+ Set the delegate
+ 
+ Defines the class that implements the optional protocol `BITHockeyManagerDelegate`.
+ 
+ The delegate will automatically be propagated to all components. There is no need to set the delegate
+ for each component individually.
+ 
+ @warning This property needs to be set before calling `startManager`
+ 
+ @see BITHockeyManagerDelegate
+ @see BITCrashManagerDelegate
+ @see BITUpdateManagerDelegate
+ @see BITFeedbackManagerDelegate
+ @see BITAuthenticatorDelegate
+ @see BITStoreUpdateManagerDelegate
  */
-@property (nonatomic, weak) id<BITHockeyManagerDelegate> delegate;
+@property (nonatomic, weak, nullable) id<BITHockeyManagerDelegate> delegate;
 
 
 /**
@@ -199,9 +223,15 @@
  
  By default this is set to the HockeyApp servers and there rarely should be a
  need to modify that.
+ Please be aware that the URL for `BITMetricsManager` needs to be set separately
+ as this class uses a different endpoint!
+ 
+ @warning This property needs to be set before calling `startManager`
  */
-@property (nonatomic, strong) NSString *serverURL;
+@property (nonatomic, copy) NSString *serverURL;
 
+
+#if HOCKEYSDK_FEATURE_CRASH_REPORTER
 
 /**
  Reference to the initialized BITCrashManager module
@@ -222,13 +252,20 @@
  If this flag is enabled, then crash reporting is disabled and no crashes will
  be send.
  
- Please note that the Crash Manager will be initialized anyway!
+ Please note that the Crash Manager instance will be initialized anyway, but crash report
+ handling (signal and uncaught exception handlers) will **not** be registered.
+
+ @warning This property needs to be set before calling `startManager`
 
  *Default*: _NO_
  @see crashManager
  */
 @property (nonatomic, getter = isCrashManagerDisabled) BOOL disableCrashManager;
 
+#endif
+
+
+#if HOCKEYSDK_FEATURE_UPDATES
 
 /**
  Reference to the initialized BITUpdateManager module
@@ -249,13 +286,19 @@
  If this flag is enabled, then checking for updates and submitting beta usage
  analytics will be turned off!
  
- Please note that the Update Manager will be initialized anyway!
+ Please note that the Update Manager instance will be initialized anyway!
  
+ @warning This property needs to be set before calling `startManager`
+
  *Default*: _NO_
  @see updateManager
  */
 @property (nonatomic, getter = isUpdateManagerDisabled) BOOL disableUpdateManager;
 
+#endif
+
+
+#if HOCKEYSDK_FEATURE_STORE_UPDATES
 
 /**
  Reference to the initialized BITStoreUpdateManager module
@@ -276,12 +319,19 @@
  If this flag is enabled, then checking for updates when the app runs from the
  app store will be turned on!
  
- Please note that the Store Update Manager will be initialized anyway!
- 
+ Please note that the Store Update Manager instance will be initialized anyway!
+
+ @warning This property needs to be set before calling `startManager`
+
  *Default*: _NO_
  @see storeUpdateManager
  */
 @property (nonatomic, getter = isStoreUpdateManagerEnabled) BOOL enableStoreUpdateManager;
+
+#endif
+
+
+#if HOCKEYSDK_FEATURE_FEEDBACK
 
 /**
  Reference to the initialized BITFeedbackManager module
@@ -302,12 +352,19 @@
  If this flag is enabled, then letting the user give feedback and
  get responses will be turned off!
  
- Please note that the Feedback Manager will be initialized anyway!
- 
+ Please note that the Feedback Manager instance will be initialized anyway!
+
+ @warning This property needs to be set before calling `startManager`
+
  *Default*: _NO_
  @see feedbackManager
  */
 @property (nonatomic, getter = isFeedbackManagerDisabled) BOOL disableFeedbackManager;
+
+#endif
+
+
+#if HOCKEYSDK_FEATURE_AUTHENTICATOR
 
 /**
  Reference to the initialized BITAuthenticator module
@@ -320,19 +377,52 @@
  */
 @property (nonatomic, strong, readonly) BITAuthenticator *authenticator;
 
+#endif
+
+#if HOCKEYSDK_FEATURE_METRICS
+
+/**
+ Reference to the initialized BITMetricsManager module
+ 
+ Returns the BITMetricsManager instance initialized by BITHockeyManager
+ */
+@property (nonatomic, strong, readonly) BITMetricsManager *metricsManager;
+
+/**
+ Flag the determines whether the BITMetricsManager should be disabled
+ 
+ If this flag is enabled, then sending metrics data such as sessions and users 
+ will be turned off!
+ 
+ Please note that the BITMetricsManager instance will be initialized anyway!
+  
+ *Default*: _NO_
+ @see metricsManager
+ */
+@property (nonatomic, getter = isMetricsManagerDisabled) BOOL disableMetricsManager;
+
+#endif
 
 ///-----------------------------------------------------------------------------
 /// @name Environment
 ///-----------------------------------------------------------------------------
 
+
 /**
- Flag that determines whether the application is installed and running
- from an App Store installation.
+ Enum that indicates what kind of environment the application is installed and running in.
  
- Returns _YES_ if the app is installed and running from the App Store
- Returns _NO_ if the app is installed via debug, ad-hoc or enterprise distribution
+ This property can be used to disable or enable specific funtionality 
+ only when specific conditions are met.
+ That could mean for example, to only enable debug UI elements 
+ when the app has been installed over HockeyApp but not in the AppStore.
+ 
+ The underlying enum type at the moment only specifies values for the AppStore,
+ TestFlight and Other. Other summarizes several different distribution methods
+ and we might define additional specifc values for other environments in the future.
+ 
+ @see BITEnvironment
  */
-@property (nonatomic, readonly, getter=isAppStoreEnvironment) BOOL appStoreEnvironment;
+@property (nonatomic, readonly) BITEnvironment appEnvironment;
 
 
 /**
@@ -345,12 +435,33 @@
  This is not identical to the `[ASIdentifierManager advertisingIdentifier]` or
  the `[UIDevice identifierForVendor]`!
  */
-@property (nonatomic, readonly) NSString *installString;
+@property (nonatomic, readonly, copy) NSString *installString;
 
+
+/**
+ Disable tracking the installation of an app on a device
+ 
+ This will cause the app to generate a new `installString` value every time the
+ app is cold started.
+ 
+ This property is only considered in App Store Environment, since it would otherwise
+ affect the `BITUpdateManager` and `BITAuthenticator` functionalities!
+ 
+ @warning This property needs to be set before calling `startManager`
+ 
+ *Default*: _NO_
+ */
+@property (nonatomic, getter=isInstallTrackingDisabled) BOOL disableInstallTracking;
 
 ///-----------------------------------------------------------------------------
 /// @name Debug Logging
 ///-----------------------------------------------------------------------------
+
+/**
+ This property is used indicate the amount of verboseness and severity for which
+ you want to see log messages in the console.
+ */
+@property (nonatomic, assign) BITLogLevel logLevel;
 
 /**
  Flag that determines whether additional logging output should be generated
@@ -359,9 +470,37 @@
  This is ignored if the app is running in the App Store and reverts to the
  default value in that case.
  
+ @warning This property needs to be set before calling `startManager`
+ 
  *Default*: _NO_
  */
-@property (nonatomic, assign, getter=isDebugLogEnabled) BOOL debugLogEnabled;
+@property (nonatomic, assign, getter=isDebugLogEnabled) BOOL debugLogEnabled DEPRECATED_MSG_ATTRIBUTE("Use logLevel instead!");
+
+/**
+ Set a custom block that handles all the log messages that are emitted from the SDK.
+
+ You can use this to reroute the messages that would normally be logged by `NSLog();`
+ to your own custom logging framework.
+
+ An example of how to do this with NSLogger:
+ 
+ ```
+ [[BITHockeyManager sharedHockeyManager] setLogHandler:^(BITLogMessageProvider messageProvider, BITLogLevel logLevel, const char *file, const char *function, uint line) {
+    LogMessageRawF(file, (int)line, function, @"HockeySDK", (int)logLevel-1, messageProvider());
+ }];
+ ```
+
+ or with CocoaLumberjack:
+ 
+ ```
+ [[BITHockeyManager sharedHockeyManager] setLogHandler:^(BITLogMessageProvider messageProvider, BITLogLevel logLevel, const char *file, const char *function, uint line) {
+    [DDLog log:YES message:messageProvider() level:ddLogLevel flag:(DDLogFlag)(1 << (logLevel-1)) context:<#CocoaLumberjackContext#> file:file function:function line:line tag:nil];
+ }];
+ ```
+ 
+ @param logHandler The block of type BITLogHandler that will process all logged messages.
+ */
+- (void)setLogHandler:(BITLogHandler)logHandler;
 
 
 ///-----------------------------------------------------------------------------
@@ -399,11 +538,17 @@
  want to define specific data for each component, use the delegate instead which does
  overwrite the values set by this property.
  
+ @warning When returning a non nil value, crash reports are not anonymous any more
+ and the crash alerts will not show the word "anonymous"!
+ 
+ @warning This property needs to be set before calling `startManager` to be considered
+ for being added to crash reports as meta data.
+
  @see userName
  @see userEmail
  @see `[BITHockeyManagerDelegate userIDForHockeyManager:componentManager:]`
  */
-@property (nonatomic, retain) NSString *userID;
+@property (nonatomic, copy, nullable) NSString *userID;
 
 
 /** Set the user name that should used in the SDK components
@@ -421,11 +566,14 @@
  @warning When returning a non nil value, crash reports are not anonymous any more
  and the crash alerts will not show the word "anonymous"!
 
+ @warning This property needs to be set before calling `startManager` to be considered
+ for being added to crash reports as meta data.
+
  @see userID
  @see userEmail
  @see `[BITHockeyManagerDelegate userNameForHockeyManager:componentManager:]`
  */
-@property (nonatomic, retain) NSString *userName;
+@property (nonatomic, copy, nullable) NSString *userName;
 
 
 /** Set the users email address that should used in the SDK components
@@ -442,12 +590,15 @@
  
  @warning When returning a non nil value, crash reports are not anonymous any more
  and the crash alerts will not show the word "anonymous"!
+ 
+ @warning This property needs to be set before calling `startManager` to be considered
+ for being added to crash reports as meta data.
 
  @see userID
  @see userName
- @see `[BITHockeyManagerDelegate userEmailForHockeyManager:componentManager:]`
+ @see [BITHockeyManagerDelegate userEmailForHockeyManager:componentManager:]
  */
-@property (nonatomic, retain) NSString *userEmail;
+@property (nonatomic, copy, nullable) NSString *userEmail;
 
 
 ///-----------------------------------------------------------------------------
@@ -465,3 +616,5 @@
 - (NSString *)build;
 
 @end
+
+NS_ASSUME_NONNULL_END
