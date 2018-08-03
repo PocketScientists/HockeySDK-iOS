@@ -1,0 +1,5 @@
+export BUILT_PRODUCTS_DIR="/Users/Arbeit/Library/Developer/Xcode/DerivedData/Companion-bswpqksmajbpdafocjxnotieskaa/Build/Products/Release-iphoneos"
+export CURRENT_ARCH="arm64"
+export OBJECT_FILE_DIR_normal="/Users/Arbeit/Library/Developer/Xcode/DerivedData/Companion-bswpqksmajbpdafocjxnotieskaa/Build/Intermediates.noindex/HockeySDK.build/Release-iphoneos/HockeySDK.build/Objects-normal"
+export OBJROOT="/Users/Arbeit/Library/Developer/Xcode/DerivedData/Companion-bswpqksmajbpdafocjxnotieskaa/Build/Intermediates.noindex"
+export SRCROOT="/Users/Arbeit/Documents/Projekte/Companion/CompanionConfiguration/Companion/Vendor/HockeySDK/Support"
